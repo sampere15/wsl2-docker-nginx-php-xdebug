@@ -21,9 +21,3 @@ RUN pecl install xdebug \
 RUN docker-php-ext-install pdo pdo_pgsql bcmath sockets pdo_mysql
 RUN install-php-extensions amqp
 RUN install-php-extensions redis
-
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-RUN curl -sS https://get.symfony.com/cli/installer | bash
-RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
