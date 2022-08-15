@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  # PHP FPM server.
+  php:
+    image: php:8.1.8-fpm
+    container_name: php
+    build:
+      context: .
+    security_opt:
+      - label:disable
+    volumes:
+      - ./:/usr/share/nginx/html
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    environment:
+      TZ: Europe/Madrid
+    networks:
+      - test_network
+
+  # Nginx Web server
+  nginx:
+    image: nginx:1.22.0
+    container_name: nginx
+    volumes:
+      - ./:/usr/share/nginx/html
+      - ./docker/site.conf:/etc/nginx/conf.d/site.conf
+    depends_on:
+      - php
+    security_opt:
+      - label:disable
+    environment:
+      TZ: "Europe/Madrid"
+    ports:
+      - 8001:80
+    networks:
+      - test_network
+        
+# Use a extenal network called test_network
+networks:
+  test_network:
+    external: true

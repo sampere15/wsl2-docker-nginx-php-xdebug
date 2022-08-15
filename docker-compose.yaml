@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  # DB MySQL
+  test.mysql80:
+    container_name: test.mysql80
+    image: mysql:8.0
+    restart: "no"
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'dev'
+      MYSQL_PASSWORD: 'dev'
+      MYSQL_VERSION: '8.0'
+    volumes:
+      - mysql80-data-store:/var/lib/mysql
+    networks:
+      - test_network
+
+  # Rabbitmq server
+  test.rabbitmq:
+    container_name: test.rabbitmq
+    image: rabbitmq:3.9.20-management
+    security_opt:
+      - label:disable
+    volumes:
+      - ./:/usr/share/html
+    environment:
+      TZ: "Europe/Madrid"
+    ports:
+      - 4369:4369
+      - 35197:35197
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - test_network
+
+  # Redis server
+  test.redis:
+    container_name: test.redis
+    image: "redis:alpine"
+    command: redis-server --requirepass ABCD1234
+    volumes:
+      - ./docker/redis:/data
+    ports:
+      - 6379:6379
+    networks:
+      - test_network
+
+
+volumes:
+  mysql80-data-store:
+    external: true
+    name: mysql80-data-store
+
+networks:
+  default:
+    external:
+      name: test_network
